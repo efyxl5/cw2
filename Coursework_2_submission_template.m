@@ -26,11 +26,34 @@ end
 
 %% TASK 1 - READ TEMPERATURE DATA, PLOT, AND WRITE TO A LOG FILE [20 MARKS]
 
-% Insert answers here
+clear
 
+duration = 600; % duration of collecting data in seconds
+
+temp_co = 0.01; % temp coefficient in voltage per degree celcius
+voltage_0deg = 0.0; % voltage at 0 degree celcius in voltage
+
+% setting up the arrays used
+voltage_values = zeros(1,duration); 
+temp_values = zeros(1,duration);
+
+% collecting data 
+for t = 1:duration
+    v = 0.2 + 0.4 * rand();
+    voltage_values(t) = v; % stpring the values collected 
+    temp = (v - voltage_0deg) / temp_co;
+    temp_values(t) = temp;
+end
+
+
+min_temp = min(temp_values);
+avrg_temp = min(temp_values);
+max_temp = min(temp_values);
+
+fprintf('The min temp : %.2f °C\n', min_temp)
+fprintf('The max temp : %.2f °C\n', max_temp)
+fprintf('The average temp : %.2f °C\n', avrg_temp)
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
-
-% Insert answers here
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
