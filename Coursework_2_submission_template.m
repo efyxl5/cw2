@@ -93,21 +93,26 @@ end
 
 % opening a file for writing ----------------------------------------------
 
-fileID = fopen('cabin_data.txt', 'w');
+fileID = fopen('cabin_data.txt', 'w'); % oppening a file for writing 
 
-if fileID == -1
+if fileID == -1 % ensuring that the file was opened with no issues
     error('this file could not be opened');
 end
+
+% creating titles for the file 
+fprintf(fileID, 'CABIN DATA\n');
+fprintf(fileID, 'date: %s\n', formatted_date);
+fprintf(fileID, 'location: %s\n\n', location);
 
 fprintf(fileID, 'Time(min)\tTemp (°C)\n');
 fprintf(fileID, '-------------------------------\n');
 
-for i = 1:length(minute)
+for i = 1:length(minute) % allowing data to be written in the file; loop
     fprintf(fileID, 'minute %d\t\t%.2f\n', minute(i), minute_temp(i));
 end 
 
-fclose(fileID);
-disp('data has been recorded in file');
+fclose(fileID); % closing the file 
+disp('data has been recorded in file'); % letting the users know that the file has been successfully created
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
