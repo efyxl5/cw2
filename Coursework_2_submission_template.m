@@ -45,14 +45,70 @@ for t = 1:duration
     temp_values(t) = temp;
 end
 
-
+% using matlab functions to calculate stats
 min_temp = min(temp_values);
-avrg_temp = min(temp_values);
-max_temp = min(temp_values);
+avrg_temp = mean(temp_values);
+max_temp = max(temp_values);
 
+% displaying the results
 fprintf('The min temp : %.2f °C\n', min_temp)
 fprintf('The max temp : %.2f °C\n', max_temp)
 fprintf('The average temp : %.2f °C\n', avrg_temp)
+
+% plotting the graph ------------------------------------------------------
+
+time = 0:duration -1; 
+
+figure;
+plot(time, temp_values, 'b-', 'LineWidth', 1);
+
+% adding labels to the graphs
+xlabel('Time (s)');
+ylabel('Temp (°C)');
+title('Temp v Time');
+grid on;
+
+% recording cabin data to a screen
+
+r_data = datetime('now'); % getting the information to what date it is when the data is being recorded
+formatted_date = datestr(r_data,'dd/mm/yyyy'); 
+location = 'Manchester';
+
+minute = 0:9; % recording from minute 0 to minute 9
+minute_temp = temp_values(1:60:end); % picking sample data from my temp values every 60 seconds
+
+% printing the border and titles
+fprintf('-------------------------------\n');
+fprintf('CABIN DATA\n');
+fprintf('date: %s\n',formatted_date);
+fprintf('location: %s\n\n', location);
+
+fprintf('Time (min)\tTemp (°C)\n');
+fprintf('-------------------------------\n');
+
+% this is a loop that allows data to be printed in rows
+for i = 1:length(minute) 
+    fprintf('minutes %d\t\t%.2f\n', minute(i), minute_temp(i));
+end
+
+% opening a file for writing ----------------------------------------------
+
+fileID = fopen('cabin_data.txt', 'w');
+
+if fileID == -1
+    error('this file could not be opened');
+end
+
+fprintf(fileID, 'Time(min)\tTemp (°C)\n');
+fprintf(fileID, '-------------------------------\n');
+
+for i = 1:length(minute)
+    fprintf(fileID, 'minute %d\t\t%.2f\n', minute(i), minute_temp(i));
+end 
+
+fclose(fileID);
+disp('data has been recorded in file');
+
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
 
