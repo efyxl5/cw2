@@ -71,7 +71,7 @@ grid on;
 % recording cabin data to a screen
 
 r_data = datetime('now'); % getting the information to what date it is when the data is being recorded
-formatted_date = datestr(r_data,'dd/mm/yyyy'); 
+formatted_date = datestr(r_data,'dd/mm/yyyy'); % datestr not recommended but used for simplicity for this code, datetime used above to show that there's variation to this issue 
 location = 'Manchester';
 
 minute = 0:9; % recording from minute 0 to minute 9
