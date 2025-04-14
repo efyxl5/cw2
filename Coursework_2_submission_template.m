@@ -9,7 +9,7 @@ clear
 a = arduino('COM3', 'Uno');
 
 
-ledPin = 'D5';
+ledPin = 'D8';
 
 
 for i = 1:10  % loop to blink the LED 10 times
@@ -118,48 +118,43 @@ disp('data has been recorded in file'); % letting the users know that the file h
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
-function monitortemp(a)
+a = arduino('COM3', 'Uno');
 
-greenLED = 'D12';
-yellowLED = 'D10';
-redLED = 'D8';
+function temp_monitor(a)
 
-configurePin(a, greenLED, 'DigitalOutput');
-configurePin(a, yellowLED, 'DigitalOutput');
-configurePin(a, redLED, 'DigitalOutput');
+    greenLED = 'D9';
+    yellowLED = 'D10';
+    redLED = 'D11';
+    sensorPin = 'A0';
 
-sensor = 'A1';
+    configurePin(a, greenLED, 'DigitalOutput');
+    configurePin(a, yellowLED, 'DigitalOutput');
+    configurePin(a, redLED, 'DigitalOutput');
 
-temp_coeff = 0.01;
-V_0deg = 0.0;
+   
+    duration = 600;
+    temp_data = 15 + (30 - 15) * rand(1, duration);
 
-time = 0;
-temp_data = [];
-time_data = [];
 
-figure;
-hold on;
-grid on;
+    figure;
+    hold on;
+    grid on;
+    xlabel('Time (s)');
+    ylabel('Temperature (°C)');
+    title('Live Temperature Plot');
+    xlim([0, duration]);
+    ylim([10, 35]);
 
-xlabel('Time (s)');
-ylabel('Temp (°C)');
-title('live temp monitoring');
+    
+    for t = 1:duration
+        temp = temp_data(t);
 
-while true
 
-    v = readV(a,sensor);
-    temp = (v - V_0deg) / temp_coeff;
-
-    time = time + 1;
-    temp_data(end + 1) = temp;
-    time_data(end + 1) = time;
-
-    plot(time_data, temp_data, 'b-', 'LineWidth', 1);
-        xlim([max(0, time - 100), time + 10]);
-        ylim([min(temp_data) - 2, max(temp_data) + 2]);
+        plot(t, temp, 'bo');
         drawnow;
 
-         if temp >= 18 && temp <= 24
+
+        if temp >= 18 && temp <= 24
             writeDigitalPin(a, greenLED, 1);
             writeDigitalPin(a, yellowLED, 0);
             writeDigitalPin(a, redLED, 0);
@@ -171,7 +166,7 @@ while true
             pause(0.5);
             writeDigitalPin(a, yellowLED, 0);
             pause(0.5);
-        elseif temp > 24
+        else
             writeDigitalPin(a, greenLED, 0);
             writeDigitalPin(a, yellowLED, 0);
             writeDigitalPin(a, redLED, 1);
@@ -180,7 +175,14 @@ while true
             pause(0.25);
         end
     end
+
+
+    writeDigitalPin(a, greenLED, 0);
+    writeDigitalPin(a, yellowLED, 0);
+    writeDigitalPin(a, redLED, 0);
 end
+         
+        
 
 
 
