@@ -9,7 +9,7 @@ clear
 a = arduino('COM3', 'Uno');
 
 
-ledPin = 'D3';
+ledPin = 'D5';
 
 
 for i = 1:10  % loop to blink the LED 10 times
@@ -72,7 +72,7 @@ grid on;
 
 r_data = datetime('now'); % getting the information to what date it is when the data is being recorded
 formatted_date = datestr(r_data,'dd/mm/yyyy'); % datestr not recommended but used for simplicity for this code, datetime used above to show that there's variation to this issue 
-location = 'Manchester';
+location = 'Nottingham';
 
 minute = 0:9; % recording from minute 0 to minute 9
 minute_temp = temp_values(1:60:end); % picking sample data from my temp values every 60 seconds
@@ -87,8 +87,10 @@ fprintf('Time (min)\tTemp (°C)\n');
 fprintf('-------------------------------\n');
 
 % this is a loop that allows data to be printed in rows
-for i = 1:length(minute) 
-    fprintf('minutes %d\t\t%.2f\n', minute(i), minute_temp(i));
+
+for i = 1:length(minute)
+    fprintf('%-12s %2d\n', 'Minute', minute(i));         
+    fprintf('%-12s %.2f C\n\n', 'Temperature', minute_temp(i)); % %-12s means alignment within 12 spaces
 end
 
 % opening a file for writing ----------------------------------------------
@@ -115,6 +117,71 @@ fclose(fileID); % closing the file
 disp('data has been recorded in file'); % letting the users know that the file has been successfully created
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
+
+function monitortemp(a)
+
+greenLED = 'D12';
+yellowLED = 'D10';
+redLED = 'D8';
+
+configurePin(a, greenLED, 'DigitalOutput');
+configurePin(a, yellowLED, 'DigitalOutput');
+configurePin(a, redLED, 'DigitalOutput');
+
+sensor = 'A1';
+
+temp_coeff = 0.01;
+V_0deg = 0.0;
+
+time = 0;
+temp_data = [];
+time_data = [];
+
+figure;
+hold on;
+grid on;
+
+xlabel('Time (s)');
+ylabel('Temp (°C)');
+title('live temp monitoring');
+
+while true
+
+    v = readV(a,sensor);
+    temp = (v - V_0deg) / temp_coeff;
+
+    time = time + 1;
+    temp_data(end + 1) = temp;
+    time_data(end + 1) = time;
+
+    plot(time_data, temp_data, 'b-', 'LineWidth', 1);
+        xlim([max(0, time - 100), time + 10]);
+        ylim([min(temp_data) - 2, max(temp_data) + 2]);
+        drawnow;
+
+         if temp >= 18 && temp <= 24
+            writeDigitalPin(a, greenLED, 1);
+            writeDigitalPin(a, yellowLED, 0);
+            writeDigitalPin(a, redLED, 0);
+            pause(1);
+        elseif temp < 18
+            writeDigitalPin(a, greenLED, 0);
+            writeDigitalPin(a, yellowLED, 1);
+            writeDigitalPin(a, redLED, 0);
+            pause(0.5);
+            writeDigitalPin(a, yellowLED, 0);
+            pause(0.5);
+        elseif temp > 24
+            writeDigitalPin(a, greenLED, 0);
+            writeDigitalPin(a, yellowLED, 0);
+            writeDigitalPin(a, redLED, 1);
+            pause(0.25);
+            writeDigitalPin(a, redLED, 0);
+            pause(0.25);
+        end
+    end
+end
+
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
