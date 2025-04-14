@@ -28,6 +28,8 @@ end
 
 clear
 
+a = arduino('COM3', 'Uno');
+
 duration = 600; % duration of collecting data in seconds
 
 temp_co = 0.01; % temp coefficient in voltage per degree celcius
@@ -39,8 +41,15 @@ temp_values = zeros(1,duration);
 
 % collecting data 
 for t = 1:duration
-    v = 0.2 + 0.4 * rand();
-    voltage_values(t) = v; % stpring the values collected 
+    v = readVoltage(a, 'A0');
+    disp(['Voltage at time ', num2str(t), ': ', num2str(v), ' V']);  % displays the voltage value
+    
+    if v < 0 || v > 5  % check if the voltage is out of expected range
+        disp('Warning: Voltage out of expected range');
+        continue; 
+    end
+    
+    voltage_values(t) = v; % store the collected voltage values
     temp = (v - voltage_0deg) / temp_co;
     temp_values(t) = temp;
 end
@@ -122,7 +131,7 @@ clear
 
 a = arduino('COM3', 'Uno');
 
-temp_monitor(a);
+% temp_monitor(a);
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
