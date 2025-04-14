@@ -127,11 +127,15 @@ disp('data has been recorded in file'); % letting the users know that the file h
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
-clear
+clear;
 
-a = arduino('COM3', 'Uno');
+a = arduino('COM3', 'Uno'); 
 
-% temp_monitor(a);
+duration = 600;  
+temp_co = 0.01;  
+voltage_0deg = 0.0;  
+
+temp_monitor(a, duration, temp_co, voltage_0deg);
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
