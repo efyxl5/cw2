@@ -118,72 +118,11 @@ disp('data has been recorded in file'); % letting the users know that the file h
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
+clear
+
 a = arduino('COM3', 'Uno');
 
-function temp_monitor(a)
-
-    greenLED = 'D9';
-    yellowLED = 'D10';
-    redLED = 'D11';
-    sensorPin = 'A0';
-
-    configurePin(a, greenLED, 'DigitalOutput');
-    configurePin(a, yellowLED, 'DigitalOutput');
-    configurePin(a, redLED, 'DigitalOutput');
-
-   
-    duration = 600;
-    temp_data = 15 + (30 - 15) * rand(1, duration);
-
-
-    figure;
-    hold on;
-    grid on;
-    xlabel('Time (s)');
-    ylabel('Temperature (°C)');
-    title('Live Temperature Plot');
-    xlim([0, duration]);
-    ylim([10, 35]);
-
-    
-    for t = 1:duration
-        temp = temp_data(t);
-
-
-        plot(t, temp, 'bo');
-        drawnow;
-
-
-        if temp >= 18 && temp <= 24
-            writeDigitalPin(a, greenLED, 1);
-            writeDigitalPin(a, yellowLED, 0);
-            writeDigitalPin(a, redLED, 0);
-            pause(1);
-        elseif temp < 18
-            writeDigitalPin(a, greenLED, 0);
-            writeDigitalPin(a, yellowLED, 1);
-            writeDigitalPin(a, redLED, 0);
-            pause(0.5);
-            writeDigitalPin(a, yellowLED, 0);
-            pause(0.5);
-        else
-            writeDigitalPin(a, greenLED, 0);
-            writeDigitalPin(a, yellowLED, 0);
-            writeDigitalPin(a, redLED, 1);
-            pause(0.25);
-            writeDigitalPin(a, redLED, 0);
-            pause(0.25);
-        end
-    end
-
-
-    writeDigitalPin(a, greenLED, 0);
-    writeDigitalPin(a, yellowLED, 0);
-    writeDigitalPin(a, redLED, 0);
-end
-         
-        
-
+temp_monitor(a);
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
