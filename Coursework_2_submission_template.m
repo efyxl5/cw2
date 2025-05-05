@@ -30,100 +30,100 @@ clear
 
 a = arduino('COM3', 'Uno');
 
-duration = 600; % duration of collecting data in seconds
+% duration of data logging
+duration = 600;
 
-temp_co = 0.01; % temp coefficient in voltage per degree celcius
-voltage_0deg = 0.0; % voltage at 0 degree celcius in voltage
 
-% setting up the arrays used
-voltage_values = zeros(1,duration); 
-temp_values = zeros(1,duration);
+temp_co = 0.01;          % voltage change per °C
+voltage_0deg = 0.5;      % voltage at 0°C (V)
 
-% collecting data 
+% initialize arrays
+voltage_values = zeros(1, duration);
+temp_values = zeros(1, duration);
+
+% begin data collection
+disp('Starting temperature data acquisition...')
 for t = 1:duration
     v = readVoltage(a, 'A0');
-    disp(['Voltage at time ', num2str(t), ': ', num2str(v), ' V']);  % displays the voltage value
     
-    if v < 0 || v > 5  % check if the voltage is out of expected range
-        disp('Warning: Voltage out of expected range');
-        continue; 
+    % voltage range check 
+    if v < 0 || v > 5
+        disp(['Warning: Voltage out of range at t = ', num2str(t)])
+        continue
     end
     
-    voltage_values(t) = v; % store the collected voltage values
-    temp = (v - voltage_0deg) / temp_co;
-    temp_values(t) = temp;
+    voltage_values(t) = v;
+    
+    % convert voltage to temperature using linear model
+    temp_values(t) = (v - voltage_0deg) / temp_co; 
 end
 
-% using matlab functions to calculate stats
+% calculate statistics
 min_temp = min(temp_values);
-avrg_temp = mean(temp_values);
 max_temp = max(temp_values);
+avg_temp = mean(temp_values);
 
-% displaying the results
-fprintf('The min temp : %.2f °C\n', min_temp)
-fprintf('The max temp : %.2f °C\n', max_temp)
-fprintf('The average temp : %.2f °C\n', avrg_temp)
+% display results
+fprintf('Minimum Temperature: %.2f °C\n', min_temp);
+fprintf('Maximum Temperature: %.2f °C\n', max_temp);
+fprintf('Average Temperature: %.2f °C\n', avg_temp);
 
-% plotting the graph ------------------------------------------------------
-
-time = 0:duration -1; 
-
+% plot the graph between time and temp
+time = 0:duration - 1;
 figure;
-plot(time, temp_values, 'b-', 'LineWidth', 1);
-
-% adding labels to the graphs
+plot(time, temp_values, 'b-', 'LineWidth', 1.5);
 xlabel('Time (s)');
-ylabel('Temp (°C)');
-title('Temp v Time');
+ylabel('Temperature (°C)');
+title('Temperature vs Time');
 grid on;
 
-% recording cabin data to a screen
-
-r_data = datetime('now'); % getting the information to what date it is when the data is being recorded
-formatted_date = datestr(r_data,'dd/mm/yyyy'); % datestr not recommended but used for simplicity for this code, datetime used above to show that there's variation to this issue 
+% printing formatted data 
+r_date = datetime('now');
+formatted_date = datestr(r_date, 'dd/mm/yyyy');
 location = 'Nottingham';
 
-minute = 0:9; % recording from minute 0 to minute 9
-minute_temp = temp_values(1:60:end); % picking sample data from my temp values every 60 seconds
-
-% printing the border and titles
-fprintf('-------------------------------\n');
+fprintf('\n-------------------------------\n');
 fprintf('CABIN DATA\n');
-fprintf('date: %s\n',formatted_date);
-fprintf('location: %s\n\n', location);
-
+fprintf('Date: %s\n', formatted_date);
+fprintf('Location: %s\n\n', location);
 fprintf('Time (min)\tTemp (°C)\n');
 fprintf('-------------------------------\n');
 
-% this is a loop that allows data to be printed in rows
-
-for i = 1:length(minute)
-    fprintf('%-12s %2d\n', 'Minute', minute(i));         
-    fprintf('%-12s %.2f C\n\n', 'Temperature', minute_temp(i)); % %-12s means alignment within 12 spaces
+% use sprintf to build strings then print the lines
+for i = 0:9
+    idx = i * 60 + 1; % every 60 seconds
+    if idx > length(temp_values)
+        break;
+    end
+    line1 = sprintf('Minute\t\t%d', i);
+    line2 = sprintf('Temperature\t%.2f °C\n', temp_values(idx));
+    fprintf('%s\n%s\n\n', line1, line2);
 end
 
-% opening a file for writing ----------------------------------------------
+% writing the data into a text file 
+fileID = fopen('cabin_temperature.txt', 'w');
 
-fileID = fopen('cabin_data.txt', 'w'); % oppening a file for writing 
-
-if fileID == -1 % ensuring that the file was opened with no issues
-    error('this file could not be opened');
+if fileID == -1
+    error('Could not open file for writing.');
 end
 
-% creating titles for the file 
 fprintf(fileID, 'CABIN DATA\n');
-fprintf(fileID, 'date: %s\n', formatted_date);
-fprintf(fileID, 'location: %s\n\n', location);
-
-fprintf(fileID, 'Time(min)\tTemp (°C)\n');
+fprintf(fileID, 'Date: %s\n', formatted_date);
+fprintf(fileID, 'Location: %s\n\n', location);
+fprintf(fileID, 'Time (min)\tTemp (°C)\n');
 fprintf(fileID, '-------------------------------\n');
 
-for i = 1:length(minute) % allowing data to be written in the file; loop
-    fprintf(fileID, 'minute %d\t\t%.2f\n', minute(i), minute_temp(i));
-end 
+for i = 0:9
+    index = i * 60 + 1;
+    if index > length(temp_values)
+        break;
+    end
+    fprintf(fileID, 'Minute\t\t%d\n', i);
+    fprintf(fileID, 'Temperature\t%.2f °C\n\n', temp_values(index));
+end
 
-fclose(fileID); % closing the file 
-disp('data has been recorded in file'); % letting the users know that the file has been successfully created
+fclose(fileID);
+disp('Data has been recorded in cabin_data.txt');
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
