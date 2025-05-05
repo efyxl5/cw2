@@ -127,15 +127,12 @@ disp('Data has been recorded in cabin_data.txt');
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
-clear;
+clear
 
-a = arduino('COM3', 'Uno'); 
+a = arduino('COM3', 'Uno');
 
-duration = 600;  
-temp_co = 0.01;  
-voltage_0deg = 0.0;  
-
-temp_monitor(a, duration, temp_co, voltage_0deg);
+% calling the function
+temp_monitor(a);
 
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
