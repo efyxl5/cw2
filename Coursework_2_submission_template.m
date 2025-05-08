@@ -42,17 +42,17 @@ voltage_values = zeros(1, duration);
 temp_values = zeros(1, duration);
 
 % begin data collection
-disp('Starting temperature data acquisition...')
+disp('starting data collection...')
 for t = 1:duration
     v = readVoltage(a, 'A0');
     
     % voltage range check 
     if v < 0 || v > 5
-        disp(['Warning: Voltage out of range at t = ', num2str(t)])
+        disp(['warning: voltage out of range at t = ', num2str(t)])
         continue
     end
     
-    voltage_values(t) = v;
+    voltage_values(t) = v; % storing voltage values 
     
     % convert voltage to temperature using linear model
     temp_values(t) = (v - voltage_0deg) / temp_co; 
@@ -64,17 +64,17 @@ max_temp = max(temp_values);
 avg_temp = mean(temp_values);
 
 % display results
-fprintf('Minimum Temperature: %.2f °C\n', min_temp);
-fprintf('Maximum Temperature: %.2f °C\n', max_temp);
-fprintf('Average Temperature: %.2f °C\n', avg_temp);
+fprintf('minimum temperature: %.2f °C\n', min_temp);
+fprintf('maximum temperature: %.2f °C\n', max_temp);
+fprintf('average temperature: %.2f °C\n', avg_temp);
 
 % plot the graph between time and temp
 time = 0:duration - 1;
 figure;
 plot(time, temp_values, 'b-', 'LineWidth', 1.5);
-xlabel('Time (s)');
-ylabel('Temperature (°C)');
-title('Temperature vs Time');
+xlabel('time (s)');
+ylabel('temperature (°C)');
+title('temperature vs Time');
 grid on;
 
 % printing formatted data 
@@ -104,7 +104,7 @@ end
 fileID = fopen('cabin_temperature.txt', 'w');
 
 if fileID == -1
-    error('Could not open file for writing.');
+    error('could not open file for writing.');
 end
 
 fprintf(fileID, 'CABIN DATA\n');
@@ -113,17 +113,20 @@ fprintf(fileID, 'Location: %s\n\n', location);
 fprintf(fileID, 'Time (min)\tTemp (°C)\n');
 fprintf(fileID, '-------------------------------\n');
 
+% printing one temp reading per minute 
 for i = 0:9
     index = i * 60 + 1;
     if index > length(temp_values)
         break;
     end
+
+    % opening text file 
     fprintf(fileID, 'Minute\t\t%d\n', i);
     fprintf(fileID, 'Temperature\t%.2f °C\n\n', temp_values(index));
 end
 
 fclose(fileID);
-disp('Data has been recorded in cabin_data.txt');
+disp('data has been recorded in cabin_data.txt');
 
 %% TASK 2 - LED TEMPERATURE MONITORING DEVICE IMPLEMENTATION [25 MARKS]
 
