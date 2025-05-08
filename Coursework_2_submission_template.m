@@ -137,12 +137,25 @@ temp_monitor(a);
 
 %% TASK 3 - ALGORITHMS – TEMPERATURE PREDICTION [25 MARKS]
 
-% Insert answers here
+clear 
+
+a = arduino('COM3', 'Uno');
+
+temp_prediction(a);
 
 
 %% TASK 4 - REFLECTIVE STATEMENT [5 MARKS]
 
-% Insert reflective statement here (400 words max)
+% Challenges I faced were definitely the connections on the breadboard, the
+% components were very fragile and trying to find ways to connect all the
+% components together took some time. I found correcting the code after
+% writing up a skeleton to be my strength because I could trial and error
+% the code again to esure it's working as intended. The limitations were
+% just my knowledge on different ways to make the code more efficient and
+% reduce error. For the future I think I should'nt leave such a long gap
+% before coming back to each task because I would forget what I have done.
+
+
 
 
 %% TASK 5 - COMMENTING, VERSION CONTROL AND PROFESSIONAL PRACTICE [15 MARKS]
